@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <body>
+        <div id="app">
+            <button @click="increase">{{count}}</button>
+            <button @click="sayHi">{{name}}</button>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const {createApp, ref} = Vue;
+
+    createApp({
+        setup() {
+            const count = ref(0);
+            const increase = () => {
+                count.value++;
+            }
+            const name = ref("composition api");
+            const sayHi = () => {
+                alert(name.value);
+            }
+            return {count, increase, name, sayHi};
+        }
+    }).mount("#app");
+</script>
