@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>모두의 코딩</title>
+    </head>
+    <body>
+        <div id="app">
+            <ul>
+                <li>{{`오늘의 메시지: ${message}`}}</li>
+                <!-- directive란 Vue에서 데이터 표현 등의 용도로 사용되는 속성들로, v- 라는 prefix를 가짐 -->
+                <li v-html="message"></li> <!-- v-html의 경우 xss 위험이 있으므로 v-text 사용 권장 -->
+                <li v-text="message.toUpperCase()"></li> 
+                <li v-once>{{message}}</li> <!-- model의 값 뿐만 아니라 연산, 메서드 호출 등도 할 수 있음 -->
+            </ul>
+        </div>
+        {{message}}
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, ref } = Vue;
+
+    {/* 
+        Vue 객체가 적용되는 html의 범위는 mount함수에서 지정된 영역으로 한정. 
+        현 예제에서 mount의 범위는 <div id="app">의 내부이므로
+        div 바깥의 {{message}}는 그대로 문자열로 표현됨.
+    */}
+    createApp({
+        setup() {
+            const message = ref('<h1>Hi Vue</h1>');
+            
+            return {message};
+        }
+    }).mount('#app');
+</script>
