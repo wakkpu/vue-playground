@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>모두의 코딩</title>
+    </head>
+    <body>
+        <div id="app">
+            <button @click="nState.count++">일반형, 화면 갱신 X : {{nState}}</button><br/>
+            <button @click="rState.count++">반응형, 화면 갱신 O : {{rState}}</button><br/>
+            <button @click="rState.user.age++">깊은 반응성</button><br/>
+
+            <ul>
+                <!-- script 영역에서 ref값에 접근할 때는 .value가 필요했지만 
+                    template영역에서 ref값에 접근할 때는 .value가 필요하지 않다 -->
+                <li>ref(기본형): {{refPrimitive}}</li>
+                <li>ref(객체형): {{refObject.count}}</li>
+            </ul>
+            <button @click="refPrimitive++">refPrimitive 증가</button><br/>
+            <button @click="refObjectIncrease">refObject count 증가</button><br/>
+
+            <!-- 객체 내부의 ref를 사용할 때는 .value를 통해야 한다 -->
+            <ul>
+                <li>nested: {{nested}}</li>
+                <li>nested foo: {{nested.foo}}, {{nested.foo + 1}}, {{nested.foo.value + 1}}</li>
+                <li>nested.bar: {{nested.bar}}, {{nested.bar + 1}}, {{nested.bar.value + 1}}</li>
+            </ul>
+            <button @click="increment">+</button>
+            <button @click="nested.bar.value++">+</button>
+
+            <div>{{reactiveState.count}}</div>
+            <div>{{readOnlyState.count}}</div>
+            <button @click="reactiveState.count++">+</button>
+            <button @click="readOnlyState.count++">+</button>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, reactive, ref, toRefs, readonly } = Vue;
+
+    createApp({
+        setup() {
+            // reactive는 객체 타입(Object, Arrays, Map, Set...)에만 사용 가능
+            // 기본형인 string, number 등에는 ref 사용
+            const nState = {count: 10, user: {age: 10}};
+            const rState = reactive(nState);
+
+            // Object, Proxy
+            console.log(nState, rState);
+
+
+            // ref는 단일값을 parameter로 가지고, value라는 키 값에 parameter를 매핑.
+            // 따라서 실제 값을 접근하기 위해서는 value로 한 단계 더 들어가야 함.
+            const refObject = ref({count: 0});
+            console.log(refObject); // _value가 Proxy
+            console.log(`object count++: ${++refObject.value.count}`);
+            
+            const refObjectIncrease = () => {
+                refObject.value.count++;
+            }
+            
+            const refPrimitive = ref(0);
+            console.log(refPrimitive); // _value가 primitive
+            console.log(`primitive count++: ${++refPrimitive.value}`);
+
+
+            // model 데이터를 구성할 때 ref 요소를 속성으로 갖는 객체를 구성할 수 있다.
+            const nested = {foo: ref(1), bar: ref(2)};
+            const increment = () => {nested.foo.value++};
+
+
+            // toRef를 통해 값을 객체의 속성을 분리할 때 반응성을 유지시킬 수 있다
+            const user = reactive({name: "hong gil dong", age: 30});
+            const {name: nName, age: nAge} = user; // 그냥 분해하면 반응성 사라짐
+            console.log("not reactive", nName, nAge);
+
+            const {name: rName, age: rAge} = toRefs(user);
+            console.log("reactive", rName, rAge, rName.value, rAge.value);
+
+
+            // readonly를 통해 반응형 객체의 값을 수정할 수 없도록 할 수 있다
+            const reactiveState = reactive({count: 0});
+            const readOnlyState = readonly(reactiveState);
+            return {
+                nState, rState, 
+                refObject, refObjectIncrease, refPrimitive, 
+                nested, increment,
+                user, nName, nAge, rName, rAge,
+                reactiveState, readOnlyState
+            };
+        }
+    }).mount('#app');
+</script>
