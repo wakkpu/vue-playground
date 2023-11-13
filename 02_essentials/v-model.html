@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<!--
+    v-model은 사용자로부터 값을 입력받는 input, select, textarea 등에서 사용됨.
+    v-bind처럼 value 속성에 모델의 값을 표시하는데, 추가로 입력값을 변경하면
+    자동으로 모델에 반영시켜 준다.
+
+    input에서 type이 checkbox이거나 select에서 multiple 속성인 경우 선택값은
+    배열 객체와 연결되며 나머지는 단일 값과 연결된다.
+-->
+<html>
+    <body>
+        <!-- v-model 수식어 -->
+        <!--
+            trim: 입력 문자열 앞뒤 공백 제거
+            number: 기본 입력값은 string인데, 이를 number로 변환
+            lazy: 입력 폼에서 change 이벤트가 발생하면 데이터 동기화(기본은 key 이벤트가 발생할 때마다)
+        -->
+        <div id="app">
+            <label>아이디를 입력하세요</label
+            ><input type="text" v-model.trim.lazy="user.id" /><br />
+
+            <label>나이는?</label
+            ><input type="text" v-model.lazy.trim.number="user.age" /><br />
+
+            <label>통신사</label>
+            <input type="radio" value="skt" v-model="user.comm" /><label
+                >SKT</label
+            >
+            <input type="radio" value="kt" v-model="user.comm" /><label
+                >KT</label
+            >
+            <input type="radio" value="lg" v-model="user.comm" /><label
+                >LG</label
+            >
+
+            <label>전공은?</label>
+            <input type="checkbox" value="com" v-model="user.major" /><label
+                >컴퓨터공학</label
+            >
+            <input type="checkbox" value="sw" v-model="user.major" /><label
+                >소프트웨어공학</label
+            >
+            <input type="checkbox" value="etc" v-model="user.major" /><label
+                >기타</label
+            >
+
+            <label>주소지</label>
+            <select v-model="user.addr">
+                <option disabled value="">지역 선택</option>
+                <option>서울</option>
+                <option>경기</option>
+                <option>광주</option>
+            </select>
+
+            <hr />
+            <label>사용자 정보</label>
+            {{user}}, {{user.age + 10}}
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, reactive } = Vue;
+
+    createApp({
+        setup() {
+            const user = reactive({ major: [] });
+
+            return { user };
+        },
+    }).mount("#app");
+</script>
