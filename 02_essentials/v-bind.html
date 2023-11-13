@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+    <body>
+        <div id="app">
+            <!-- v-bind는 html의 속성인 id, class, style 등에 대해 model의 데이터를 연결할 때 사용. -->
+            <a v-bind:id="linkId" v-bind:href="link.to" :title="link.title">
+                {{label}}
+            </a>
+
+            <br />
+            <!-- 
+                v-bind는 문자열, 숫자 뿐만 아니라 boolean, 객체 등 바인드 가능.
+                boolean의 경우, disabled나 editable와 같이 값 없이 속성만 있는 경우 적용 가능.
+                객체를 통째로 bind하는 경우 속성을 '모두' bind할 때만 가능. 축약형 사용 불가.
+            -->
+            <button :disabled="btnDisabled">못 누를걸?</button>
+            <input v-bind="inputAttr" />
+            <br />
+
+            <!-- 
+                attrName과 연결되는 속성은 '소문자'로 변경돼 연결된다
+                (html에서는 속성의 이름은 대소문자 구별하지 않기 때문)
+                -> camel case 형태의 변수 등 bind시 warning 발생함
+            -->
+            <div v-bind:[attrName]="attrValue">Hi</div>
+            <br />
+
+            <div v-bind:class="classList" class="set3">
+                단순 value를 이용한 바인딩
+            </div>
+            <div v-bind:class="[style1, style2, style3]">
+                배열을 이용한 바인딩
+            </div>
+            <div v-bind:class="[activeSet1 ? style1 : style2, style3]">
+                조건식을 이용한 바인딩
+            </div>
+            <div v-bind:class="{set1:activeSet1, set2:true}">
+                객체를 이용한 바인딩
+            </div>
+        </div>
+    </body>
+</html>
+
+<style>
+    .set1 {
+        background-color: aqua;
+        color: purple;
+    }
+
+    .set2 {
+        text-decoration: overline;
+        font-style: italic;
+    }
+
+    .set3 {
+        border: 1px solid blue;
+    }
+</style>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, reactive, ref } = Vue;
+
+    createApp({
+        setup() {
+            const label = ref("vuejs.org");
+            const linkId = ref("vue");
+            const link = reactive({
+                to: "http://vuejs.org",
+                title: "뷰 공식 사이트",
+            });
+
+            const btnDisabled = ref(true);
+            const inputAttr = reactive({
+                type: "number",
+                value: 4,
+                id: "age",
+            });
+
+            const attrname = ref("id");
+            const attrValue = ref("custom");
+
+            const classList = "set1 set2";
+            const activeSet1 = true;
+            const style1 = "set1";
+            const style2 = "set2";
+            const style3 = "set3";
+
+            return {
+                label,
+                linkId,
+                link,
+                btnDisabled,
+                inputAttr,
+                attrname,
+                attrValue,
+                classList,
+                activeSet1,
+                style1,
+                style2,
+                style3,
+            };
+        },
+    }).mount("#app");
+</script>
