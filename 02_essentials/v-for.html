@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <div id="app">
+            <h1>배열 표현</h1>
+            <ul>
+                <li v-for="(hero, index) in heroes">{{index}} - {{hero}}</li>
+            </ul>
+
+            <h1>객체 표현</h1>
+            <ul>
+                <li v-for="(value, key, index) in ironMan">
+                    {{index}} - {{key}} : {{value}}
+                </li>
+            </ul>
+
+            <h1>범위 반복</h1>
+            <template v-for="n in range">
+                <div>구구단 {{n}}단</div>
+                <span v-for="m in 9"> {{n}} * {{m}} = {{n*m}}&nbsp;&nbsp;</span>
+            </template>
+
+            <!--
+                v-if와 v-for를 함께 사용할 때 v-if의 우선 순위가 더 높으므로 <li v-for="i in 9" v-if="i%2 == 0">과 같은 경우 
+                v-if의 시점에 i는 존재하지 않으므로 warning이 발생하게 된다.
+                => 원칙적으로 2개의 directive를 한 element에서 사용하지 않는 것이 좋다. 
+                혹은, template을 통해 분리하거나 computed 등을 통해 filtering된 목록을 사용하면 된다.
+            -->
+            <ul>
+                <template v-for="i in 9">
+                    <li v-if="i % 2 == 0">{{i}} * {{i}} = {{i*i}}</li>
+                </template>
+            </ul>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, ref, reactive } = Vue;
+
+    createApp({
+        setup() {
+            const heroes = ref([
+                "iron man",
+                "hulk",
+                "captain america",
+                "spider man",
+            ]);
+            const ironMan = reactive({
+                name: "토니 스타크",
+                canFly: true,
+            });
+            const range = ref(9);
+
+            return { heroes, ironMan, range };
+        },
+    }).mount("#app");
+</script>
