@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+
+<html>
+    <body>
+        <div id="app">
+            현재 나이는 {{age}}이니까...
+            <span v-if="age < 8">미취학</span>
+            <span v-else-if="age < 19">미성년</span>
+            <span v-else>성년</span>
+            <br />
+            <button @click="age++">+</button>
+            <br />
+
+            <!--
+                조건에 따라서 여러 개의 element의 rendering을 변경해야 할 때는 template으로 묶자.
+                div나 span 등으로 묶을 수 있지만 template은 나중에 DOM이 생성될 때 사라지는 속성이므로
+                DOM 구조를 복잡하지 않게 유지할 수 있다
+            -->
+            <h1>반려 동물 정보</h1>
+            <template v-if="isCat">
+                <h3>고양이</h3>
+                <div>야옹</div>
+            </template>
+            <template v-else>
+                <h3>강아지</h3>
+                <div>멍멍</div>
+            </template>
+            <button @click="isCat = !isCat">toggle</button>
+
+            <!--
+                v-if는 요소를 그리지 않고 주석 처리하고, v-show는 display: none을 적용해서 보이지 않게 한다.
+                => 화면이 자주 바뀌는 경우는 v-show를, 자주 변경되지 않는 경우는 v-if를 쓰자.
+            -->
+            <h1>v-if vs v-show</h1>
+            <div>
+                <span>사용자의 나이는 {{age}}</span>
+                <span v-if="age < 0">[오류(v-if)]</span>
+                <span v-show="age < 0">[오류(v-show)]</span>
+                <br />
+                <button @click="age--">-</button>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const { createApp, ref } = Vue;
+
+    createApp({
+        setup() {
+            const age = ref(0);
+            const isCat = ref(true);
+
+            return {
+                age,
+                isCat,
+            };
+        },
+    }).mount("#app");
+</script>
