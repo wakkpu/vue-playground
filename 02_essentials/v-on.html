@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="app">
+            현재 잔고 : <span>{{info.balance}}</span>
+            <hr/>
+            <label>거래 금액: </label><input type="number" v-model.number="info.amount">
+            <button v-on:click="info.balance += info.amount">입금</button> <!-- inline method -->
+            <button v-on:click="deposite()">입금</button> <!-- method call -->
+            <button v-on:click="deposite">입금</button> <!-- callback method -->
+            <button @click="withdraw">출금</button>
+
+            <!-- 이벤트 객체 넘겨줄 수 있지만 parameter 넘겨줄 수 없음 -->
+            <button @click="useEventObject">method handler</button>
+            <!-- paramter와 함께 이벤트 객체 $event로 명시적으로 넘겨줄 수 있음 -->
+            <button @click="useEventObject($event, 'hello')">inline handler(normal)</button>
+            <button @click="(event) => useEventObject(event, 'Hi')">inline handler(arrow)</button>
+
+            <form action="#" @submit.prevent="login">
+                <label>ID:</label><input type="text" placeholder="ID는 4글자 이상입니다" v-model="id"/>
+                <input type="submit"/>
+            </form>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const {createApp, reactive, ref} = Vue;
+
+    createApp({
+        setup() {
+            const info = reactive({balance: 100, amount: 10});
+
+            const withdraw = () => {
+                if(info.balance >= info.amount) {
+                    info.balance -= info.amount;
+                } else {
+                    alert("잔액 부족");
+                }
+            };
+
+            const deposite = () => {
+                info.balance += info.amount;
+            };
+
+            const useEventObject = (e, param) => {
+                console.log(`html: ${e.target.innerHTML}, param: ${param}`);
+            }
+
+            const id = ref("");
+            const login = (event) => {
+                if(id.value.length < 4) {
+                    alert("ID는 4글자 이상이어야 합니다")
+                } else {
+                    event.target.submit();
+                }
+            }
+
+            return {info, withdraw, deposite, useEventObject, id, login};
+        }
+    }).mount("#app");
+</script>
