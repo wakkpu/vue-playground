@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <body>
+        <div id="app">
+            <h2>사용자 정보</h2>
+            <ul>
+                <li>age: {{age}}</li>
+                <li>can vote? : {{age >= 18? "yes" : "no"}}</li>
+                <li>can vote? : {{canVote}}</li>
+            </ul>
+
+            <button @click="age--">-</button>
+            <button @click="age++">+</button>
+
+            <div>{{pretty}}</div>
+
+            <input type="text" v-model.number="dan"/>의 합은?<br/>
+            <ul>
+                <li>일반 method 2번 호출: {{sumM()}}, {{sumM()}}</li>
+                <li>computed 2번 호출: {{sumC}}, {{sumC}}</li>
+            </ul>
+        </div>
+    </body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const {createApp, ref, computed, reactive} = Vue;
+
+    createApp({
+        setup() {
+            /*
+            computed의 파라미터는 값을 계산한 후 반환하는 함수이며
+            computed의 반환값은 파라미터 함수가 반환하는 값을 가지는 Proxy 객체의 일종이다.
+            -> 따라서 연결되는 data가 변경되면 자동으로 새로운 값을 계산하고 화면에 변경한다
+            */
+            const age = ref(17);
+            const canVote = computed(() => {
+                return age.value >= 18 ? "yes" : "no";
+            });
+
+
+            /* 
+            Vue 2에서는 filter를 사용해서 data를 formatting했는데 Vue 3에서는 filter가 사라졌다.
+            computed를 사용해 filter와 같은 기능을 구현할 수 있다.
+            */
+            const price = 100000000;
+            const pretty = computed(() => {
+                const option = {style: "currency", currency: "KRW"};
+                return new Intl.NumberFormat("ko-KR", option).format(price);
+            });
+
+            /*
+            computed의 특징 중 하나는 값을 caching한다는 점이다.
+            template 영역에서 메소드를 직접 실행하는 경우 실행한 횟수만큼 함수가 동작하지만
+            computed는 종속 대상이 변경되지 않는 이상 한 번만 동작한 후 그 값을 caching해서 사용한다.
+            */
+
+            const dan = ref(1); // sumM과 sumC 모두 dan이라는 변수에 종속되어 있다.
+
+            // sumM은 2번 동작한다. (console.log 2번 찍힘)
+            const sumM = () => {
+                let sum = 0;
+                for(let i=1; i<10; i++) {
+                    sum += dan.value * i;
+                }
+                console.log(`sumM: ${sum}`);
+                return sum;
+            }
+
+            // sumC는 1번 동작한다. (console.log 1번 찍힘)
+            const sumC = computed(() => {
+                let sum = 0;
+                for(let i=1; i<10; i++) {
+                    sum += dan.value * i;
+                }
+                console.log(`sumC: ${sum}`);
+                return sum;
+            })
+
+            const user = reactive({
+                first: "gil dong",
+                last: "hong"
+            });
+
+            /*
+            computed는 '이미 계산된 속성'이기 때문에 기본적으로 read-only이므로
+            새로운 값을 할당하려고 하면 오류가 발생한다.
+            */
+            const computedName = computed(() => {
+                return `${user.first}(${user.last})`;
+            });
+            console.log(computedName.value);
+            computedName.value = "some";
+
+            return {age, canVote, pretty, dan, sumM, sumC, computedName};
+        }
+    }).mount("#app");
+</script>
