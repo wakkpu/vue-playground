@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">
+        <span>{{num}}</span>
+        <button @click="plus">+</button>
+        <button @click="unmount">unmount</button>
+    </div>
+</body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<!--
+composition api의 경우 setup hook(setup method)에서 beforeCreate, created에 해당하는 과정이 한 번에 처리된다.
+
+일반적으로 ajax를 통해 서버의 데이터를 가져와서 활용하는 경우 created life cycle hook에서 처리한다.
+하지만 composition에서는 setup에 created가 포함되기 때문에 setup에서 처리하면 된다.
+-->
+
+<script>
+    const {createApp, ref, onMounted, onUpdated, onUnmounted} = Vue;
+    const app = createApp({
+        setup(props) {
+            const num = ref(10);
+            const plus = () => num.value++;
+
+            const unmount = () => {
+                app.unmount();
+            }
+
+            console.log(
+                `setup: num: ${num.value}, html: ${document.querySelector("#app").innerHTML}`
+            );
+
+            onMounted(() => {
+                console.log(
+                    `onMounted: num: ${num.value}, html: ${document.querySelector("#app").innerHTML}`
+                );
+            });
+
+            onUpdated(() => {
+                console.log(
+                    `onUpdated: num: ${num.value}, html: ${document.querySelector("#app").innerHTML}`
+                );
+            });
+
+            onUnmounted(() => {
+                console.log(
+                    `onUnmounted: num: ${num.value}, html: ${document.querySelector("#app").innerHTML}`
+                );
+            });
+
+            return {num, plus, unmount};
+        }
+    });
+
+    app.mount("#app");
+</script>
