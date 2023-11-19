@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div id="app">
+        <label>기본 숫자 : <input type="number" v-model.number.lazy="num"/></label>
+        <p>제곱 : {{squareC}}, {{squareW}}</p>
+        <p>제곱근 : {{sqrtC}}, {{sqrtW}}</p>
+
+        <label>이름 : <input type="text" v-model="name"/></label>
+        <label>나이 : <input type="number" v-model.number.lazy="age"/></label>
+    </div>
+</body>
+</html>
+
+<script src="https://unpkg.com/vue@3"></script>
+
+<script>
+    const {createApp, ref, watch, computed, watchEffect} = Vue;
+
+    createApp({
+        setup() {
+            const num = ref(4);
+
+            const squareC = computed(() => num.value * num.value);
+            const sqrtC = computed(() => Math.sqrt(num.value));
+
+            const squareW = ref(0);
+            const sqrtW = ref(0);
+
+            /* Vue.watch(source, callback, option)
+             source : 감시할 대상. ref, reactive, getter, Array<getter>, ...
+             callback : 값이 변경됐을 때 동작을 수행할 method.
+             option : watch를 위한 부가적인 option들로 이루어진 객체이다.
+             - immediate : watch가 처음 생성될 때도 동작할 것이지를 설정.
+             - deep : watch 대상이 객체일 때 객체의 property가 변경되는 것까지 watch할 지를 설정.
+            */
+            watch(num, (nv, ov) => {
+                console.log(`num 변경: ${ov} -> ${nv}`);
+                squareW.value = nv * nv;
+                sqrtW.value = Math.sqrt(nv);
+            }, {immediate : true});
+
+            /* watchEffect
+             watch는 lazy한 감시로 소스의 변경이 발생하기 전에는 동작하지 않지만,
+             watchEffect는 반응형 의존성을 자동으로 감시하면서 초기에 즉시 side effect를 실행한다.
+
+             watch는 감시 대상 소스를 지정해야 하지만,
+             watchEffect는 실행 코드에서 사용 중인 반응형 객체가 변경되면 즉시 동작한다.
+             */
+
+            /* watch vs watchEffect
+             watch : 추적할 소스를 명시, 콜백은 소스가 실제로 변경된 경우에 실행.
+             -> 의존성 추적과 사이드 이펙트를 분리하여 콜백이 실행되어야 할 시기를 명시적으로 파악 가능.
+
+             watchEffect : 의존성 추적과 사이드 이펙트를 하나의 단계로 결합해서 사용.
+             -> 별도의 소스 등록 없이 관련된 모든 반응형 속성을 자동으로 추적하므로 간결하지만 덜 명시적.
+             */
+            const age = ref(20);
+            const name = ref("hong");
+
+            watchEffect(() => {
+                console.log(age.value, name.value);
+            })
+
+            return {num, squareC, squareW, sqrtC, sqrtW, age, name};
+        }
+    }).mount("#app");
+</script>
